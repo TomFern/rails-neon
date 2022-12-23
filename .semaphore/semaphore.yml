@@ -1,0 +1,19 @@
+version: v1.0
+name: Initial Pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: DB Migration Test
+    task:
+      jobs:
+        - name: Migrate test
+          commands:
+            - sem-version ruby 3.0
+            - checkout
+            - ./db-scripts/create-branch.sh main env-branch
+            - ./db-scripts/get-branches.sh
+            - source env-branch
+            - 'rails db:migrate'
+            - ./db-scripts/delete-branch.sh $BRANCH?ID
