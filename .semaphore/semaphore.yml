@@ -17,3 +17,5 @@ blocks:
             - source env-branch
             - 'rails db:migrate'
             - ./db-scripts/delete-branch.sh $BRANCH?ID
+      secrets:
+        - name: neon-prod
