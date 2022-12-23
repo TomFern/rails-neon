@@ -8,7 +8,7 @@ env.txt
 NOTES
 
 # Ignore bundler config.
-/.bundle
+#/.bundle
 
 # Ignore all logfiles and tempfiles.
 /log/*
