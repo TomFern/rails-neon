@@ -1,0 +1,47 @@
+version: v1.0
+name: Continuous Deployment
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+blocks:
+  - name: "DB Test \U0001F4BE"
+    task:
+      jobs:
+        - name: Migration Test
+          commands:
+            - ./db-scripts/create-branch.sh main env-branch
+            - ./db-scripts/get-branches.sh
+            - source env-branch
+            - 'bin/rails db:migrate'
+            - ./db-scripts/delete-branch.sh $BRANCH_ID
+      secrets:
+        - name: neon-prod
+      prologue:
+        commands:
+          - 'sudo sh -c ''echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'''
+          - 'wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -'
+          - sudo apt-get update
+          - sudo apt-get -y install postgresql-client-15
+          - sem-version ruby 3.0
+          - checkout
+          - cache restore
+          - bundler install
+          - cache store
+    dependencies: []
+  - name: "Deploy \U0001F680"
+    dependencies:
+      - "Migrate database \U0001F4BE"
+    task:
+      jobs:
+        - name: Production
+          commands:
+            - sleep 12
+  - name: "Migrate database \U0001F4BE"
+    dependencies:
+      - "DB Test \U0001F4BE"
+    task:
+      jobs:
+        - name: 'Migrate '
+          commands:
+            - sleep 10
