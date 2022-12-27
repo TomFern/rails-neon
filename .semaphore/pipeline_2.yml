@@ -10,13 +10,14 @@ blocks:
       jobs:
         - name: Migration Test
           commands:
+            - source $HOME/env.txt
             - ./db-scripts/create-branch.sh main env-branch
             - ./db-scripts/get-branches.sh
             - source env-branch
             - 'bin/rails db:migrate'
             - ./db-scripts/delete-branch.sh $BRANCH_ID
       secrets:
-        - name: neon-prod
+        - name: neon
       prologue:
         commands:
           - 'sudo sh -c ''echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'''
